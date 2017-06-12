@@ -173,6 +173,7 @@ namespace AirlinePlanner
     {
       City.DeleteAll();
       AirlineService.DeleteAll();
+      Flight.DeleteAll();
     }
   }
 }

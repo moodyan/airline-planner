@@ -147,6 +147,7 @@ namespace AirlinePlanner
     {
       AirlineService.DeleteAll();
       City.DeleteAll();
+      Flight.DeleteAll();
     }
   }
 }
