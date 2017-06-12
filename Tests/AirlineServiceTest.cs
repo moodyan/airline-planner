@@ -122,26 +122,53 @@ namespace AirlinePlanner
       Assert.Equal(testList, result);
     }
 
-    [Fact]
-    public void Delete_DeletesAirlineServiceFromDatabase_AirlineServiceList()
-    {
-      //Arrange
-      string name1 = "Alaska Airlines";
-      AirlineService testAirlineService1 = new AirlineService(name1);
-      testAirlineService1.Save();
-
-      string name2 = "United Airlines";
-      AirlineService testAirlineService2 = new AirlineService(name2);
-      testAirlineService2.Save();
-
-      //Act
-      testAirlineService1.Delete();
-      List<AirlineService> resultAirlineServices = AirlineService.GetAll();
-      List<AirlineService> testAirlineServiceList = new List<AirlineService> {testAirlineService2};
-
-      //Assert
-      Assert.Equal(testAirlineServiceList, resultAirlineServices);
-    }
+    // [Fact]
+    // public void Test_AddFlight_AddsFlightToAirlineService()
+    // {
+    //   //Arrange
+    //   AirlineService testAirlineService = new AirlineService("Alaska");
+    //   testAirlineService.Save();
+    //
+    //   Flight testFlight = new Flight(1234, "Portland", new DateTime (2016, 01, 01, 07, 05, 00), "Los Angeles", new DateTime (2017, 01, 01, 12, 10, 00), "ON TIME");
+    //   testFlight.Save();
+    //
+    //   Flight testFlight2 = new Flight(4321, "LAX", new DateTime (2016, 01, 01, 07, 05, 00), "PDX", new DateTime (2017, 01, 01, 12, 10, 00), "ON TIME");
+    //   testFlight2.Save();
+    //
+    //   //Act
+    //   testAirlineService.AddFlight(testFlight);
+    //   testAirlineService.AddFlight(testFlight2);
+    //
+    //   List<Flight> result = testAirlineService.GetFlights();
+    //   List<Flight> testList = new List<Flight>{testFlight, testFlight2};
+    //   Console.WriteLine(result);
+    //   Console.WriteLine("testList id = {0}, {1}", testList[0].GetId(), testList[1].GetId());
+    //   //Assert
+    //   Assert.Equal(testList, result);
+    // }
+    //
+    // [Fact]
+    // public void GetFlights_ReturnsAllAirlineServiceFlights_FlightList()
+    // {
+    //   //Arrange
+    //   AirlineService testAirlineService = new AirlineService("Alaska");
+    //   testAirlineService.Save();
+    //
+    //   Flight testFlight1 = new Flight(1234, "Portland", new DateTime (2016, 01, 01, 07, 05, 00), "Los Angeles", new DateTime (2017, 01, 01, 12, 10, 00), "ON TIME");
+    //   testFlight1.Save();
+    //
+    //   Flight testFlight2 = new Flight(4321, "LAX", new DateTime (2016, 01, 01, 07, 05, 00), "PDX", new DateTime (2017, 01, 01, 12, 10, 00), "ON TIME");
+    //   testFlight2.Save();
+    //
+    //   //Act
+    //   testAirlineService.AddFlight(testFlight1);
+    //   List<Flight> savedFlights = testAirlineService.GetFlights();
+    //   List<Flight> testList = new List<Flight> {testFlight1};
+    //
+    //
+    //   //Assert
+    //   Assert.Equal(testList, savedFlights);
+    // }
 
     public void Dispose()
     {

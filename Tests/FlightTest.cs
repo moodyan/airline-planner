@@ -28,8 +28,8 @@ namespace AirlinePlanner
     public void Test_Equal_ReturnsTrueForSameNumber()
     {
       //Arrange, Act
-      Flight firstFlight = new Flight(1234, "Portland", new DateTime (2016, 01, 01), "Los Angeles", new DateTime (2016, 01, 01), "ON TIME", 1);
-      Flight secondFlight = new Flight(1234, "Portland", new DateTime (2016, 01, 01), "Los Angeles", new DateTime (2016, 01, 01), "ON TIME", 1);
+      Flight firstFlight = new Flight(1234, "Portland", new DateTime (2016, 01, 01), "Los Angeles", new DateTime (2016, 01, 01), "ON TIME");
+      Flight secondFlight = new Flight(1234, "Portland", new DateTime (2016, 01, 01), "Los Angeles", new DateTime (2016, 01, 01), "ON TIME");
 
       //Assert
       Assert.Equal(firstFlight, secondFlight);
@@ -38,7 +38,7 @@ namespace AirlinePlanner
     public void Test_Save_SavesFlightToDatabase()
     {
       //Arrange
-      Flight testFlight = new Flight(1234, "Portland", new DateTime (2016, 01, 01, 07, 05, 00), "Los Angeles", new DateTime (2017, 01, 01, 12, 10, 00), "ON TIME", 1);
+      Flight testFlight = new Flight(1234, "Portland", new DateTime (2016, 01, 01, 07, 05, 00), "Los Angeles", new DateTime (2017, 01, 01, 12, 10, 00), "ON TIME");
       testFlight.Save();
 
       //Act
@@ -47,6 +47,19 @@ namespace AirlinePlanner
 
       //Assert
       Assert.Equal(testList, result);
+    }
+    [Fact]
+    public void Test_Find_FindsFlightInDatabase()
+    {
+      //Arrange
+      Flight testFlight = new Flight(1234, "Portland", new DateTime (2016, 01, 01, 07, 05, 00), "Los Angeles", new DateTime (2017, 01, 01, 12, 10, 00), "ON TIME");
+      testFlight.Save();
+
+      //Act
+      Flight foundFlight = Flight.Find(testFlight.GetId());
+
+      //Assert
+      Assert.Equal(testFlight, foundFlight);
     }
     public void Dispose()
     {

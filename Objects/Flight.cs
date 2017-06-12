@@ -14,9 +14,8 @@ namespace AirlinePlanner.Objects
     private string _arrivalCity;
     private DateTime _arrivalTime;
     private string _status;
-    private int _airlineServiceId;
 
-    public Flight(int Number, string DepartureCity, DateTime DepartureTime, string ArrivalCity, DateTime ArrivalTime, string Status, int AirlineServiceId, int Id = 0)
+    public Flight(int Number, string DepartureCity, DateTime DepartureTime, string ArrivalCity, DateTime ArrivalTime, string Status, int Id = 0)
     {
       _id = Id;
       _number = Number;
@@ -25,7 +24,6 @@ namespace AirlinePlanner.Objects
       _arrivalCity = ArrivalCity;
       _arrivalTime = ArrivalTime;
       _status = Status;
-      _airlineServiceId = AirlineServiceId;
     }
 
     public override bool Equals(System.Object otherFlight)
@@ -44,17 +42,12 @@ namespace AirlinePlanner.Objects
         bool arrivalCityEquality = this.GetArrivalCity() == newFlight.GetArrivalCity();
         bool arrivalTimeEquality = this.GetArrivalTime() == newFlight.GetArrivalTime();
         bool statusEquality = this.GetStatus() == newFlight.GetStatus();
-        bool airlineServiceIdEquality = this.GetAirlineServiceId() == newFlight.GetAirlineServiceId();
-        return (idEquality && numberEquality && departureCityEquality && departureTimeEquality && arrivalCityEquality && arrivalTimeEquality && statusEquality && airlineServiceIdEquality);
+        return (idEquality && numberEquality && departureCityEquality && departureTimeEquality && arrivalCityEquality && arrivalTimeEquality && statusEquality);
       }
     }
     public int GetId()
     {
       return _id;
-    }
-    public int GetAirlineServiceId()
-    {
-      return _airlineServiceId;
     }
     public int GetNumber()
     {
@@ -124,8 +117,7 @@ namespace AirlinePlanner.Objects
         string flightArrivalCity = rdr.GetString(4);
         DateTime flightArrivalTime = rdr.GetDateTime(5);
         string flightStatus = rdr.GetString(6);
-        int airlineServiceId = rdr.GetInt32(7);
-        Flight newFlight = new Flight(flightNumber, flightDepartureCity, flightDepartureTime, flightArrivalCity, flightArrivalTime, flightStatus, airlineServiceId, flightId);
+        Flight newFlight = new Flight(flightNumber, flightDepartureCity, flightDepartureTime, flightArrivalCity, flightArrivalTime, flightStatus, flightId);
         allFlights.Add(newFlight);
       }
 
@@ -146,7 +138,7 @@ namespace AirlinePlanner.Objects
       SqlConnection conn = DB.Connection();
       conn.Open();
 
-      SqlCommand cmd = new SqlCommand("INSERT INTO flights (number, departure_city, departure_time, arrival_city, arrival_time, status, airline_services_id) OUTPUT INSERTED.id VALUES (@FlightNumber, @FlightDepartureCity, @FlightDepartureTime, @FlightArrivalCity, @FlightArrivalTime, @FlightStatus, @AirlineServiceId);", conn);
+      SqlCommand cmd = new SqlCommand("INSERT INTO flights (number, departure_city, departure_time, arrival_city, arrival_time, status) OUTPUT INSERTED.id VALUES (@FlightNumber, @FlightDepartureCity, @FlightDepartureTime, @FlightArrivalCity, @FlightArrivalTime, @FlightStatus);", conn);
 
       SqlParameter numberParameter = new SqlParameter();
       numberParameter.ParameterName = "@FlightNumber";
@@ -178,11 +170,6 @@ namespace AirlinePlanner.Objects
       statusParameter.Value = this.GetStatus();
       cmd.Parameters.Add(statusParameter);
 
-      SqlParameter airlineServiceIdParameter = new SqlParameter();
-      airlineServiceIdParameter.ParameterName = "@AirlineServiceId";
-      airlineServiceIdParameter.Value = this.GetAirlineServiceId();
-      cmd.Parameters.Add(airlineServiceIdParameter);
-
       SqlDataReader rdr = cmd.ExecuteReader();
 
       while(rdr.Read())
@@ -197,6 +184,131 @@ namespace AirlinePlanner.Objects
       {
         conn.Close();
       }
+    }
+
+    public static Flight Find(int id)
+    {
+      SqlConnection conn = DB.Connection();
+      conn.Open();
+
+      SqlCommand cmd = new SqlCommand("SELECT * FROM flights WHERE id = @FlightId;", conn);
+      SqlParameter flightIdParameter = new SqlParameter();
+      flightIdParameter.ParameterName = "@FlightId";
+      flightIdParameter.Value = id.ToString();
+      cmd.Parameters.Add(flightIdParameter);
+      SqlDataReader rdr = cmd.ExecuteReader();
+
+      int foundFlightId = 0;
+      int foundFlightNumber = 0;
+      string foundFlightDepartureCity = null;
+      DateTime foundFlightDepartureTime = default(DateTime);
+      string foundFlightArrivalCity = null;
+      DateTime foundFlightArrivalTime = default(DateTime);
+      string foundFlightStatus = null;
+
+      while(rdr.Read())
+      {
+        foundFlightId = rdr.GetInt32(0);
+        foundFlightNumber = rdr.GetInt32(1);
+        foundFlightDepartureCity = rdr.GetString(2);
+        foundFlightDepartureTime = rdr.GetDateTime(3);
+        foundFlightArrivalCity = rdr.GetString(4);
+        foundFlightArrivalTime = rdr.GetDateTime(5);
+        foundFlightStatus = rdr.GetString(6);
+      }
+      Flight foundFlight = new Flight(foundFlightNumber, foundFlightDepartureCity, foundFlightDepartureTime, foundFlightArrivalCity, foundFlightArrivalTime, foundFlightStatus, foundFlightId);
+
+      if (rdr != null)
+      {
+        rdr.Close();
+      }
+      if (conn != null)
+      {
+        conn.Close();
+      }
+      return foundFlight;
+    }
+
+    public void AddAirlineService(AirlineService newAirlineService)
+    {
+      SqlConnection conn = DB.Connection();
+      conn.Open();
+
+      SqlCommand cmd = new SqlCommand("INSERT INTO airline_services_flights (airline_services_id, flights_id) VALUES (@AirlineServiceId, @FlightId);", conn);
+
+      SqlParameter airlineServiceIdParameter = new SqlParameter();
+      airlineServiceIdParameter.ParameterName = "@AirlineServiceId";
+      airlineServiceIdParameter.Value = newAirlineService.GetId();
+      cmd.Parameters.Add(airlineServiceIdParameter);
+
+      SqlParameter flightIdParameter = new SqlParameter();
+      flightIdParameter.ParameterName = "@FlightId";
+      flightIdParameter.Value = this.GetId();
+      cmd.Parameters.Add(flightIdParameter);
+
+      cmd.ExecuteNonQuery();
+
+      if (conn != null)
+      {
+        conn.Close();
+      }
+    }
+
+    public List<AirlineService> GetAirlineServices()
+    {
+      SqlConnection conn = DB.Connection();
+      conn.Open();
+
+      SqlCommand cmd = new SqlCommand("SELECT airline_services_id FROM airline_services_flights WHERE flights_id = @FlightId;", conn);
+
+      SqlParameter flightIdParameter = new SqlParameter();
+      flightIdParameter.ParameterName = "@FlightId";
+      flightIdParameter.Value = this.GetId();
+      cmd.Parameters.Add(flightIdParameter);
+
+      SqlDataReader rdr = cmd.ExecuteReader();
+
+      List<int> airlineServiceIds = new List<int> {};
+
+      while (rdr.Read())
+      {
+        int airlineServiceId = rdr.GetInt32(0);
+        airlineServiceIds.Add(airlineServiceId);
+      }
+      if (rdr != null)
+      {
+        rdr.Close();
+      }
+
+      List<AirlineService> airlineServices = new List<AirlineService> {};
+
+      foreach (int airlineServiceId in airlineServiceIds)
+      {
+        SqlCommand airlineServiceQuery = new SqlCommand("SELECT * FROM airline_services WHERE id = @AirlineServiceId;", conn);
+
+        SqlParameter airlineServiceIdParameter = new SqlParameter();
+        airlineServiceIdParameter.ParameterName = "@AirlineServiceId";
+        airlineServiceIdParameter.Value = airlineServiceId;
+        airlineServiceQuery.Parameters.Add(airlineServiceIdParameter);
+
+        SqlDataReader queryReader = airlineServiceQuery.ExecuteReader();
+        while (queryReader.Read())
+        {
+          int thisAirlineServiceId = queryReader.GetInt32(0);
+          string airlineServiceName = queryReader.GetString(1);
+          AirlineService foundAirlineService = new AirlineService(airlineServiceName, thisAirlineServiceId);
+          airlineServices.Add(foundAirlineService);
+        }
+        if (queryReader != null)
+        {
+          queryReader.Close();
+        }
+      }
+      if (conn != null)
+      {
+        conn.Close();
+      }
+      return airlineServices;
     }
 
     public static void DeleteAll()
