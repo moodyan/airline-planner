@@ -81,6 +81,48 @@ namespace AirlinePlanner
     }
 
     [Fact]
+    public void AddCity_AddsCityToAirlineService_CityList()
+    {
+      //Arrange
+      AirlineService testAirlineService = new AirlineService("Virgin Airlines");
+      testAirlineService.Save();
+
+      City testCity = new City("San Diego");
+      testCity.Save();
+
+      //Act
+      testAirlineService.AddCity(testCity);
+
+      List<City> result = testAirlineService.GetCities();
+      List<City> testList = new List<City>{testCity};
+
+      //Assert
+      Assert.Equal(testList, result);
+    }
+
+    [Fact]
+    public void GetCities_ReturnsAllAirlineServiceCities_CityList()
+    {
+      //Arrange
+      AirlineService testAirlineService = new AirlineService("Virgin Airlines");
+      testAirlineService.Save();
+
+      City testCity1 = new City("New York City");
+      testCity1.Save();
+
+      City testCity2 = new City("San Diego");
+      testCity2.Save();
+
+      //Act
+      testAirlineService.AddCity(testCity1);
+      List<City> result = testAirlineService.GetCities();
+      List<City> testList = new List<City> {testCity1};
+
+      //Assert
+      Assert.Equal(testList, result);
+    }
+
+    [Fact]
     public void Delete_DeletesAirlineServiceFromDatabase_AirlineServiceList()
     {
       //Arrange

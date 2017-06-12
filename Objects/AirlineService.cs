@@ -137,7 +137,7 @@ namespace AirlinePlanner.Objects
       SqlConnection conn = DB.Connection();
       conn.Open();
 
-      SqlCommand cmd = new SqlCommand("INSERT INTO cities_airline_service (city_id, airline_service_id) VALUES (@CityId, @AirlineServiceId);", conn);
+      SqlCommand cmd = new SqlCommand("INSERT INTO cities_airline_service (cities_id, airline_service_id) VALUES (@CityId, @AirlineServiceId);", conn);
 
       SqlParameter cityIdParameter = new SqlParameter();
       cityIdParameter.ParameterName = "@CityId";
