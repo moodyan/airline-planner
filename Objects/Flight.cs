@@ -10,13 +10,13 @@ namespace AirlinePlanner.Objects
     private int _id;
     private int _number;
     private string _departureCity;
-    private string _departureTime;
+    private DateTime _departureTime;
     private string _arrivalCity;
-    private string _arrivalTime;
+    private DateTime _arrivalTime;
     private string _status;
     private int _airlineServiceId;
 
-    public Flight(int Number, string DepartureCity, string DepartureTime, string ArrivalCity, string ArrivalTime, string Status, int AirlineServiceId, int Id = 0)
+    public Flight(int Number, string DepartureCity, DateTime DepartureTime, string ArrivalCity, DateTime ArrivalTime, string Status, int AirlineServiceId, int Id = 0)
     {
       _id = Id;
       _number = Number;
@@ -72,11 +72,11 @@ namespace AirlinePlanner.Objects
     {
       _departureCity = newDepartureCity;
     }
-    public string GetDepartureTime()
+    public DateTime GetDepartureTime()
     {
       return _departureTime;
     }
-    public void SetDepartureTime(string newDepartureTime)
+    public void SetDepartureTime(DateTime newDepartureTime)
     {
       _departureTime = newDepartureTime;
     }
@@ -88,11 +88,11 @@ namespace AirlinePlanner.Objects
     {
       _arrivalCity = newArrivalCity;
     }
-    public string GetArrivalTime()
+    public DateTime GetArrivalTime()
     {
       return _arrivalTime;
     }
-    public void SetArrivalTime(string newArrivalTime)
+    public void SetArrivalTime(DateTime newArrivalTime)
     {
       _arrivalTime = newArrivalTime;
     }
@@ -112,7 +112,7 @@ namespace AirlinePlanner.Objects
       SqlConnection conn = DB.Connection();
       conn.Open();
 
-      SqlCommand cmd = new SqlCommand("SELECT * FROM flight;", conn);
+      SqlCommand cmd = new SqlCommand("SELECT * FROM flights;", conn);
       SqlDataReader rdr = cmd.ExecuteReader();
 
       while(rdr.Read())
@@ -120,12 +120,12 @@ namespace AirlinePlanner.Objects
         int flightId = rdr.GetInt32(0);
         int flightNumber = rdr.GetInt32(1);
         string flightDepartureCity = rdr.GetString(2);
-        string flightDepartureTime = rdr.GetString(3);
+        DateTime flightDepartureTime = rdr.GetDateTime(3);
         string flightArrivalCity = rdr.GetString(4);
-        string flightArrivalTime = rdr.GetString(5);
+        DateTime flightArrivalTime = rdr.GetDateTime(5);
         string flightStatus = rdr.GetString(6);
         int airlineServiceId = rdr.GetInt32(7);
-        Flight newFlight = new Flight(flightNumber, flightDepartureCity, flightDepartureTime, flightArrivalCity, flightArrivalTime, flightStatus, airlineServiceId);
+        Flight newFlight = new Flight(flightNumber, flightDepartureCity, flightDepartureTime, flightArrivalCity, flightArrivalTime, flightStatus, airlineServiceId, flightId);
         allFlights.Add(newFlight);
       }
 
@@ -140,11 +140,70 @@ namespace AirlinePlanner.Objects
 
       return allFlights;
     }
+
+    public void Save()
+    {
+      SqlConnection conn = DB.Connection();
+      conn.Open();
+
+      SqlCommand cmd = new SqlCommand("INSERT INTO flights (number, departure_city, departure_time, arrival_city, arrival_time, status, airline_services_id) OUTPUT INSERTED.id VALUES (@FlightNumber, @FlightDepartureCity, @FlightDepartureTime, @FlightArrivalCity, @FlightArrivalTime, @FlightStatus, @AirlineServiceId);", conn);
+
+      SqlParameter numberParameter = new SqlParameter();
+      numberParameter.ParameterName = "@FlightNumber";
+      numberParameter.Value = this.GetNumber();
+      cmd.Parameters.Add(numberParameter);
+
+      SqlParameter departureCityParameter = new SqlParameter();
+      departureCityParameter.ParameterName = "@FlightDepartureCity";
+      departureCityParameter.Value = this.GetDepartureCity();
+      cmd.Parameters.Add(departureCityParameter);
+
+      SqlParameter departureTimeParameter = new SqlParameter();
+      departureTimeParameter.ParameterName = "@FlightDepartureTime";
+      departureTimeParameter.Value = this.GetDepartureTime();
+      cmd.Parameters.Add(departureTimeParameter);
+
+      SqlParameter arrivalCityParameter = new SqlParameter();
+      arrivalCityParameter.ParameterName = "@FlightArrivalCity";
+      arrivalCityParameter.Value = this.GetArrivalCity();
+      cmd.Parameters.Add(arrivalCityParameter);
+
+      SqlParameter arrivalTimeParameter = new SqlParameter();
+      arrivalTimeParameter.ParameterName = "@FlightArrivalTime";
+      arrivalTimeParameter.Value = this.GetArrivalTime();
+      cmd.Parameters.Add(arrivalTimeParameter);
+
+      SqlParameter statusParameter = new SqlParameter();
+      statusParameter.ParameterName = "@FlightStatus";
+      statusParameter.Value = this.GetStatus();
+      cmd.Parameters.Add(statusParameter);
+
+      SqlParameter airlineServiceIdParameter = new SqlParameter();
+      airlineServiceIdParameter.ParameterName = "@AirlineServiceId";
+      airlineServiceIdParameter.Value = this.GetAirlineServiceId();
+      cmd.Parameters.Add(airlineServiceIdParameter);
+
+      SqlDataReader rdr = cmd.ExecuteReader();
+
+      while(rdr.Read())
+      {
+        this._id = rdr.GetInt32(0);
+      }
+      if (rdr != null)
+      {
+        rdr.Close();
+      }
+      if(conn != null)
+      {
+        conn.Close();
+      }
+    }
+
     public static void DeleteAll()
     {
       SqlConnection conn = DB.Connection();
       conn.Open();
-      SqlCommand cmd = new SqlCommand("DELETE FROM flight;", conn);
+      SqlCommand cmd = new SqlCommand("DELETE FROM flights;", conn);
       cmd.ExecuteNonQuery();
       conn.Close();
     }

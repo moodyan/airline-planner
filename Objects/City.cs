@@ -137,7 +137,7 @@ namespace AirlinePlanner.Objects
       SqlConnection conn = DB.Connection();
       conn.Open();
 
-      SqlCommand cmd = new SqlCommand("INSERT INTO cities_airline_service (cities_id, airline_service_id) VALUES (@CityId, @AirlineServiceId);", conn);
+      SqlCommand cmd = new SqlCommand("INSERT INTO cities_airline_services (cities_id, airline_services_id) VALUES (@CityId, @AirlineServiceId);", conn);
       SqlParameter CityIdParameter = new SqlParameter();
       CityIdParameter.ParameterName = "@CityId";
       CityIdParameter.Value = this.GetId();
@@ -161,7 +161,7 @@ namespace AirlinePlanner.Objects
       SqlConnection conn = DB.Connection();
       conn.Open();
 
-      SqlCommand cmd = new SqlCommand("SELECT airline_service_id FROM cities_airline_service WHERE cities_id = @CityId;", conn);
+      SqlCommand cmd = new SqlCommand("SELECT airline_services_id FROM cities_airline_services WHERE cities_id = @CityId;", conn);
 
       SqlParameter cityIdParameter = new SqlParameter();
       cityIdParameter.ParameterName = "@CityId";
@@ -186,7 +186,7 @@ namespace AirlinePlanner.Objects
 
       foreach (int airlineServiceId in airlineServiceIds)
       {
-        SqlCommand airlineServiceQuery = new SqlCommand("SELECT * FROM airline_service WHERE id = @AirlineServiceId;", conn);
+        SqlCommand airlineServiceQuery = new SqlCommand("SELECT * FROM airline_services WHERE id = @AirlineServiceId;", conn);
 
         SqlParameter airlineServiceIdParameter = new SqlParameter();
         airlineServiceIdParameter.ParameterName = "@AirlineServiceId";
@@ -218,7 +218,7 @@ namespace AirlinePlanner.Objects
       SqlConnection conn = DB.Connection();
       conn.Open();
 
-      SqlCommand cmd = new SqlCommand("DELETE FROM cities WHERE id = @CityId; DELETE FROM cities_airline_service WHERE cities_id = @CityId;", conn);
+      SqlCommand cmd = new SqlCommand("DELETE FROM cities WHERE id = @CityId; DELETE FROM cities_airline_services WHERE cities_id = @CityId;", conn);
       SqlParameter cityIdParameter = new SqlParameter();
       cityIdParameter.ParameterName = "@CityId";
       cityIdParameter.Value = this.GetId();

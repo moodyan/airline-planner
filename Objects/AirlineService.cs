@@ -49,7 +49,7 @@ namespace AirlinePlanner.Objects
       SqlConnection conn = DB.Connection();
       conn.Open();
 
-      SqlCommand cmd = new SqlCommand("SELECT * FROM airline_service;", conn);
+      SqlCommand cmd = new SqlCommand("SELECT * FROM airline_services;", conn);
       SqlDataReader rdr = cmd.ExecuteReader();
 
       while(rdr.Read())
@@ -77,7 +77,7 @@ namespace AirlinePlanner.Objects
       SqlConnection conn = DB.Connection();
       conn.Open();
 
-      SqlCommand cmd = new SqlCommand("INSERT INTO airline_service (name) OUTPUT INSERTED.id VALUES (@AirlineServiceName);", conn);
+      SqlCommand cmd = new SqlCommand("INSERT INTO airline_services (name) OUTPUT INSERTED.id VALUES (@AirlineServiceName);", conn);
 
       SqlParameter nameParameter = new SqlParameter();
       nameParameter.ParameterName = "@AirlineServiceName";
@@ -104,7 +104,7 @@ namespace AirlinePlanner.Objects
       SqlConnection conn = DB.Connection();
       conn.Open();
 
-      SqlCommand cmd = new SqlCommand("SELECT * FROM airline_service WHERE id = @AirlineServiceId;", conn);
+      SqlCommand cmd = new SqlCommand("SELECT * FROM airline_services WHERE id = @AirlineServiceId;", conn);
       SqlParameter airlineServiceIdParameter = new SqlParameter();
       airlineServiceIdParameter.ParameterName = "@AirlineServiceId";
       airlineServiceIdParameter.Value = id.ToString();
@@ -137,7 +137,7 @@ namespace AirlinePlanner.Objects
       SqlConnection conn = DB.Connection();
       conn.Open();
 
-      SqlCommand cmd = new SqlCommand("INSERT INTO cities_airline_service (cities_id, airline_service_id) VALUES (@CityId, @AirlineServiceId);", conn);
+      SqlCommand cmd = new SqlCommand("INSERT INTO cities_airline_services (cities_id, airline_services_id) VALUES (@CityId, @AirlineServiceId);", conn);
 
       SqlParameter cityIdParameter = new SqlParameter();
       cityIdParameter.ParameterName = "@CityId";
@@ -162,7 +162,7 @@ namespace AirlinePlanner.Objects
       SqlConnection conn = DB.Connection();
       conn.Open();
 
-      SqlCommand cmd = new SqlCommand("SELECT cities_id FROM cities_airline_service WHERE airline_service_id = @AirlineServiceId;", conn);
+      SqlCommand cmd = new SqlCommand("SELECT cities_id FROM cities_airline_services WHERE airline_services_id = @AirlineServiceId;", conn);
 
       SqlParameter airlineServiceIdParameter = new SqlParameter();
       airlineServiceIdParameter.ParameterName = "@AirlineServiceId";
@@ -219,7 +219,7 @@ namespace AirlinePlanner.Objects
       SqlConnection conn = DB.Connection();
       conn.Open();
 
-      SqlCommand cmd = new SqlCommand("DELETE FROM airline_service WHERE id = @AirlineServiceId; DELETE FROM cities_airline_service WHERE airline_service_id = @AirlineServiceId;", conn);
+      SqlCommand cmd = new SqlCommand("DELETE FROM airline_services WHERE id = @AirlineServiceId; DELETE FROM cities_airline_services WHERE airline_services_id = @AirlineServiceId;", conn);
       SqlParameter airlineServiceIdParameter = new SqlParameter();
       airlineServiceIdParameter.ParameterName = "@AirlineServiceId";
       airlineServiceIdParameter.Value = this.GetId();
@@ -237,7 +237,7 @@ namespace AirlinePlanner.Objects
     {
       SqlConnection conn = DB.Connection();
       conn.Open();
-      SqlCommand cmd = new SqlCommand("DELETE FROM airline_service;", conn);
+      SqlCommand cmd = new SqlCommand("DELETE FROM airline_services;", conn);
       cmd.ExecuteNonQuery();
       conn.Close();
     }
